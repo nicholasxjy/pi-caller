@@ -1,0 +1,14 @@
+{
+  "name": "pi-caller",
+  "version": "0.1.0",
+  "description": "Send messages between local Pi coding agent sessions",
+  "type": "module",
+  "license": "MIT",
+  "keywords": ["pi-package"],
+  "scripts": {
+    "test": "node --test test/*.test.ts"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}
