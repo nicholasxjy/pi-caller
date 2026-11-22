@@ -1,15 +1,40 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { CustomEditor, type ExtensionAPI, type ExtensionUIContext } from "@earendil-works/pi-coding-agent";
+import { stripTerminalSequences, truncateToWidth } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 import { listPeers, openPeer, runtimeDirectory, sendTo, sessionLabel } from "./transport.ts";
 
 const extension = "pi-caller";
+
+function showSessionLabel(ui: ExtensionUIContext, label: string) {
+	const previous = ui.getEditorComponent();
+	const badge = ` ${label} `;
+	const rightBorder = "──";
+	const reserve = badge.length + rightBorder.length;
+	const requiredBorder = "─".repeat(reserve + 1);
+
+	ui.setEditorComponent((tui, theme, keybindings) => {
+		const editor = previous?.(tui, theme, keybindings)
+			?? new CustomEditor(tui, theme, keybindings, { embedWorkingStatus: true });
+		const render = editor.render.bind(editor);
+		editor.render = (width) => {
+			const lines = render(width);
+			const top = lines[0];
+			if (!top || !stripTerminalSequences(top).endsWith(requiredBorder)) return lines;
+
+			const suffix = `\x1b[7m${badge}\x1b[27m${rightBorder}`;
+			const styled = editor.borderColor?.(suffix) ?? theme.borderColor(suffix);
+			return [truncateToWidth(top, width - reserve, "") + styled, ...lines.slice(1)];
+		};
+		return editor;
+	});
+}
 
 export default function piCaller(pi: ExtensionAPI) {
 	let local: { label: string; directory: string; close: () => Promise<void> } | undefined;
 	let unavailable = "Pi Caller is starting.";
 
 	pi.on("session_start", async (_event, ctx) => {
-		let label: string | undefined;
+		let label: string;
 		try {
 			const directory = await runtimeDirectory();
 			label = await sessionLabel(ctx.sessionManager.getSessionId());
@@ -22,12 +47,12 @@ export default function piCaller(pi: ExtensionAPI) {
 				}, { triggerTurn: true, deliverAs: "followUp" });
 			});
 			local = { label, directory, close };
-			ctx.ui.setStatus(extension, `Pi Caller ${label}`);
 		} catch (error) {
 			unavailable = error instanceof Error ? error.message : String(error);
-			ctx.ui.setStatus(extension, label ? `Pi Caller ${label} (unavailable)` : "Pi Caller unavailable");
 			ctx.ui.notify(unavailable, "warning");
+			return;
 		}
+		showSessionLabel(ctx.ui, label);
 	});
 
 	pi.on("session_shutdown", async () => {

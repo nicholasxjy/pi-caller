@@ -20,7 +20,7 @@ Paste a recipient's label into a regular prompt to have your agent send the mess
 
 The agent calls `pi_caller_send` with the label and message. You can also ask it to list the online sessions or reply to the sender of a Pi Caller message.
 
-The status bar shows your session's full label. It consists of three uppercase letters, a hyphen, and one digit from 0 to 9. To send from the Pi command line, use `/sessions` to list online sessions and `/send <label> <message>` to send. You can also use an unambiguous label prefix.
+The upper-right corner of the input box shows your session's full label. It consists of three uppercase letters, a hyphen, and one digit from 0 to 9. To send from the Pi command line, use `/sessions` to list online sessions and `/send <label> <message>` to send. You can also use an unambiguous label prefix.
 
 The receiving Pi shows the sender's label and starts a turn when idle. If the agent is busy, Pi queues the message as a follow-up. A send confirmation means that the receiving process accepted the message for Pi. The recipient can send a reply to the sender's label.
 
