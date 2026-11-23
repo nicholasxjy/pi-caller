@@ -18,7 +18,7 @@ Paste a recipient's label into a regular prompt to have your agent send the mess
 
 > Send “The tests passed. You can continue.” to Pi session `ABC-1`.
 
-The agent calls `pi_caller_send` with the label and message. You can also ask it to list the online sessions or reply to the sender of a Pi Caller message.
+The agent calls `pi_caller_send` with the label and message. You can also ask it to list the online Pi sessions or reply to the sender of a Pi Caller message. When you address a subagent in the current session, the agent uses its subagent tools, even if the recipient's name looks like a Pi Caller label.
 
 The upper-right corner of the input box shows your session's full label. It consists of three uppercase letters, a hyphen, and one digit from 0 to 9. To send from the Pi command line, use `/sessions` to list online sessions and `/send <label> <message>` to send. You can also use an unambiguous label prefix.
 

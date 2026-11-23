@@ -111,10 +111,10 @@ export default function piCaller(pi: ExtensionAPI) {
 
 	pi.registerTool({
 		name: "pi_caller_list",
-		label: "List Pi sessions",
-		description: "List online local Pi sessions, their labels, and working directories. Use a label with pi_caller_send.",
-		promptSnippet: "Find online Pi sessions and their labels",
-		promptGuidelines: ["Use pi_caller_list to find a recipient when the user asks to send a message without specifying a session label."],
+		label: "List Pi Caller sessions",
+		description: "List the labels and working directories of online Pi Caller sessions when the user asks to list or contact a separate local Pi session.",
+		promptSnippet: "Look up Pi Caller labels for separate local Pi sessions",
+		promptGuidelines: ["Use pi_caller_list only when the user asks to list online Pi sessions or wants to contact a separate Pi session and needs its label."],
 		parameters: Type.Object({}),
 		async execute() {
 			const peers = await sessions();
@@ -125,14 +125,14 @@ export default function piCaller(pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "pi_caller_send",
 		label: "Send to Pi session",
-		description: "Send text directly to an online local Pi session. The receiving agent will process it when idle.",
-		promptSnippet: "Send a message directly to another Pi session by label",
+		description: "Deliver a user-requested message to a separate, already running local Pi session by its Pi Caller label or unique prefix. Use the subagent tools for messages to subagents in the current session.",
+		promptSnippet: "Deliver a cross-session message by Pi Caller label",
 		promptGuidelines: [
-			"When the user asks to send or forward content to a Pi session and provides its label or prefix, call pi_caller_send directly with that label as to and the requested content as text.",
-			"Use pi_caller_send with the sender label shown on an incoming Pi Caller message when asked to reply to it.",
+			"Use pi_caller_send directly for a message addressed to a separate Pi session by label or prefix. When the user asks to reply to a Pi Caller message, use its sender label.",
+			"Use the available subagent tools to start, steer, resume, or get results from a subagent, even when its name looks like a Pi Caller label. Reserve pi_caller_list and pi_caller_send for requests about separate Pi sessions.",
 		],
 		parameters: Type.Object({
-			to: Type.String({ description: "Recipient's Pi session label (e.g. ABC-1) or unambiguous prefix" }),
+			to: Type.String({ description: "Pi Caller label of the destination session (e.g. ABC-1) or an unambiguous prefix" }),
 			text: Type.String({ description: "The content to deliver to the recipient" }),
 		}),
 		async execute(_id, { to, text }) {
